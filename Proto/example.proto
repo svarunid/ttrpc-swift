@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package example.v1;
+
+option swift_prefix = "Example_";
+
+import "google/protobuf/empty.proto";
+
+message PutRequest {
+    string key = 1;
+    string value = 2;
+}
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    string value = 1;
+}
+
+message WatchRequest {
+    string prefix = 1;
+}
+
+message WatchEvent {
+    string key = 1;
+    string value = 2;
+    string action = 3;
+}
+
+message BatchPutRequest {
+    string key = 1;
+    string value = 2;
+}
+
+message BatchPutResponse {
+    int32 count = 1;
+}
+
+service KVStore {
+    // Unary
+    rpc Put(PutRequest) returns (google.protobuf.Empty);
+    rpc Get(GetRequest) returns (GetResponse);
+
+    // Server-streaming
+    rpc Watch(WatchRequest) returns (stream WatchEvent);
+
+    // Client-streaming
+    rpc BatchPut(stream BatchPutRequest) returns (BatchPutResponse);
+
+    // Bidi
+    rpc Sync(stream PutRequest) returns (stream GetResponse);
+}
